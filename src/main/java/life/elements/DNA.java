@@ -3,17 +3,21 @@ package life.elements;
 import java.util.List;
 
 /**
- * <short desctiption>
+ *	Representation Deoxyribonucleic acid
  *
- * <long desctiption>
- *
- * @author Suburban Squirrel
- * @since <version>
+ * @author Lekanich
+ * @since 0.1
+ * @version 0.1
  */
 public class DNA implements Macromolecule{
-	private List<Pair> pairs;
+	private final Pair[] pairs;
 
-
+	/**
+	 * Pair nucleobase
+	 * @author Lekanich
+	 * @since 0.1
+	 * @version 0.1
+	 */
 	final public static class Pair {
 		private Nucleobase firstNucleobase;
 		private Nucleobase lastNucleobase;
@@ -21,16 +25,32 @@ public class DNA implements Macromolecule{
 		/**
 		 * аденин соединяется только с тимином, гуанин — только с цитозином
 		 */
-		public enum Nucleobase { ADENINE, GUANINE, THYMINE, CYTOSINE }
+		public enum Nucleobase {
+			ADENINE("ADENINE"),
+			GUANINE("GUANINE"),
+			THYMINE("THYMINE"),
+			CYTOSINE("CYTOSINE");
 
-		final public static class ComplementarityException extends Exception {
-			public ComplementarityException(String msg) {
-				super("");
+			private String string;
+
+			Nucleobase(String string) {
+				this.string = string;
+			}
+
+			@Override
+			public String toString() {
+				return string;
 			}
 		}
 
-		public Pair(Nucleobase first, Nucleobase last) throws ComplementarityException {
-			if (!checkCorrect(first, last)) throw new ComplementarityException("");
+		final public static class NotComplementarityException extends Exception {
+			public NotComplementarityException(String msg) {
+				super("Can't complementary nucleobase: " + msg);
+			}
+		}
+
+		public Pair(Nucleobase first, Nucleobase last) throws NotComplementarityException {
+			if (!checkCorrect(first, last)) throw new NotComplementarityException(first.toString() + " " + last.toString());
 			this.firstNucleobase = first;
 			this.lastNucleobase = last;
 		}
@@ -66,9 +86,17 @@ public class DNA implements Macromolecule{
 		}
 	}
 
+	final public static class InitDNAException extends Exception {}
 
-	public DNA (int countPairs, List<Pair> pairs) {
-
+	public DNA (List<Pair> pairs) throws InitDNAException {
+		if (pairs == null || pairs.size() == 0) throw new InitDNAException();
+		this.pairs = pairs.toArray(new Pair[1]);
 	}
+
+	public DNA (Pair[] pairs) throws InitDNAException {
+		if (pairs == null || pairs.length == 0) throw new InitDNAException();
+		this.pairs = pairs;
+	}
+
 
 }
